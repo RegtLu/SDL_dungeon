@@ -1,10 +1,10 @@
-#include <SDL3/SDL.h>
+#include "SDL.h"
 #include <map>
 #include <string>
 #include <vector>
 #include <iostream>
 #define STB_IMAGE_IMPLEMENTATION
-#include <utils/stb_image.h>
+#include "stb_image.h"
 using namespace std;
 
 int *frame;
