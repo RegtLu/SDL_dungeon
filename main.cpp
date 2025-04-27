@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <iostream>
 #include <fstream>
+#include <random>
 #include "json.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -21,11 +21,16 @@ const int WINDOW_HEIGHT = 540;
 int tile_width, tile_height, tile_channel;
 int *gTexture;
 int tile_size = 32;
-int grid_width = WINDOW_WIDTH / tile_size;
-int grid_height = WINDOW_HEIGHT / tile_size;
+int grid_width;
+int grid_height;
 vector<string> sprite_names;
 map<string, pair<int, int>> sprite;
-vector<vector<string>> grid(grid_width, vector<string>(grid_height));
+vector<vector<string>> grid;
+
+// 随机数
+random_device rd;
+mt19937 gen(rd());
+uniform_int_distribution<> dis(1, 1000);
 
 void init_sprite(int h, int w, int count)
 {
@@ -48,7 +53,6 @@ void load_tileset()
 {
   std::ifstream f("tiles/tiles.json");
   json data = json::parse(f);
-  tile_size = data["size"];
   int h = data["height"];
   int w = data["width"];
   int count = data["count"];
@@ -63,21 +67,6 @@ void render_tile(int x, int y, string name)
   {
     name = "NULL"; //! 应改为提示图像
   }
-  if (name == "NULL")
-  {
-    for (int i = 0; i < tile_size; i++)
-    {
-      for (int j = 0; j < tile_size; j++)
-      {
-        int dst_x = x * tile_size + j;
-        int dst_y = y * tile_size + i;
-        if (dst_x >= WINDOW_WIDTH || dst_y >= WINDOW_HEIGHT)
-          continue;
-        frame[dst_y * WINDOW_WIDTH + dst_x] = 0xff000000;
-      }
-    }
-    return;
-  }
   pair<int, int> p = sprite[name];
   int tile_x = p.second;
   int tile_y = p.first;
@@ -91,7 +80,14 @@ void render_tile(int x, int y, string name)
         continue;
       int src_x = tile_x + j;
       int src_y = tile_y + i;
-      frame[dst_y * WINDOW_WIDTH + dst_x] = ((int *)gTexture)[src_y * tile_width + src_x];
+      if (name == "NULL")
+      {
+        frame[dst_y * WINDOW_WIDTH + dst_x] = 0xff000000;
+      }
+      else
+      {
+        frame[dst_y * WINDOW_WIDTH + dst_x] = ((int *)gTexture)[src_y * tile_width + src_x] | 0xff000000;
+      }
     }
   }
 }
@@ -126,7 +122,7 @@ void process_input(SDL_Keycode key)
     clean_board();
     break;
   case SDLK_N:
-    grid[0][0] = "house1";
+    grid[dis(gen) % grid_width][dis(gen) % grid_height] = sprite_names[dis(gen) % sizeof(sprite_names)];
     break;
   default:
     return;
@@ -176,6 +172,9 @@ void loop()
 
 void init()
 {
+  grid_width = WINDOW_WIDTH / tile_size;
+  grid_height = WINDOW_HEIGHT / tile_size;
+  grid = vector<vector<string>>(grid_width, vector<string>(grid_height));
   load_tileset();
   clean_board();
 }

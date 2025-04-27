@@ -7,7 +7,7 @@
   },
   "configurePresets": [
     {
-      "name": "RelWithDebInfo",
+      "name": "Debug",
       "hidden": false,
       "generator": "MinGW Makefiles",
       "binaryDir": "${sourceDir}/build",

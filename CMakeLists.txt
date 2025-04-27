@@ -11,8 +11,13 @@ set(SDL_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(SDL_INSTALL_TESTS OFF CACHE BOOL "" FORCE)
 add_subdirectory(utils/SDL EXCLUDE_FROM_ALL)
 
-add_executable(SDL_dungeon main.cpp)
+
+aux_source_directory(src SOURCE)
+add_executable(SDL_dungeon ${SOURCE}) # 稍后删除main.cpp
+
 target_include_directories(SDL_dungeon PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/utils/SDL/include/SDL3)
+target_link_libraries(SDL_dungeon PRIVATE SDL3::SDL3)
 target_include_directories(SDL_dungeon PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/utils/json/single_include/nlohmann)
 target_include_directories(SDL_dungeon PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/utils/stb)
-target_link_libraries(SDL_dungeon PRIVATE SDL3::SDL3)
+
+target_include_directories(SDL_dungeon PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
