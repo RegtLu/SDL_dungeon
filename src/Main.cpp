@@ -22,34 +22,27 @@ bool CheckWindowsInit(SDLWindows *windows)
     return true;
 }
 
-// Processes input events from the SDL event queue.
-// Return false if the application should stop.
-bool ProcessInput()
+
+// Return true if the application should stop.
+bool Quit()
 {
     SDL_Event event;
     if (SDL_PollEvent(&event))
     {
         if (event.type == SDL_EVENT_QUIT)
         {
-            return false;
-        }
-        if (event.type == SDL_EVENT_KEY_UP && event.key.key == SDLK_ESCAPE)
-        {
-            return false;
-        }
-        if (event.type == SDL_EVENT_KEY_UP)
-        {
-            // ! process_input(event.key.key);
+            return true;
         }
     }
-    return true;
+    return false;
 }
 
 // Main loop of game
-void MainLoop(SDLWindows *windows, int FPS = 60)
+void MainLoop(SDLWindows *windows,InputManager *input_manager, int FPS = 60)
 {
-    while (ProcessInput())
+    while (!Quit())
     {
+        input_manager->Update();
         windows->Update();
         SDL_Delay(1000 / FPS);
     }
@@ -61,6 +54,7 @@ int main(int argc, char **argv)
     {
         return -1;
     }
+    InputManager input_manager=InputManager();
     vector<string> files = {"test.json"};
     TileLoader TileSet(files, TileSize);
     vector<vector<string>> TileMap(Height / TileSize, vector<string>(Width / TileSize, "house1"));
@@ -71,7 +65,7 @@ int main(int argc, char **argv)
         SDL_Quit();
         return -1;
     }
-    MainLoop(&MainWindows);
+    MainLoop(&MainWindows,&input_manager);
 
     SDL_Quit();
     return 0;
