@@ -3,6 +3,8 @@
 #include <string>
 using namespace std;
 // A windows with it's own SDLWindow,SDLRenderer and SDLTexture
+
+const unsigned int NullTile = 0x0000000;
 class SDLWindows
 {
 private:
@@ -36,7 +38,7 @@ private:
 
     void UpdateFrameBuffer()
     {
-        fill(FrameBuffer, FrameBuffer + WindowWidth * WindowHeight, 0xff00ff00);
+        fill(FrameBuffer, FrameBuffer + WindowWidth * WindowHeight, NullTile);
         for (int y = 0; y < WindowHeight / TileSize / TileResize; y++)
         {
             for (int x = 0; x < WindowWidth / TileSize / TileResize; x++)
@@ -50,6 +52,7 @@ private:
     {
         uint8_t *pix;
         int pitch;
+        SDL_RenderClear(SDLRenderer);
         SDL_LockTexture(SDLTexture, NULL, (void **)&pix, &pitch);
         for (int i = 0, texture_offset = 0, buffer_offset = 0; i < WindowHeight; i++, texture_offset += pitch, buffer_offset += WindowWidth)
             memcpy(pix + texture_offset, FrameBuffer + buffer_offset, WindowWidth * 4);
@@ -77,6 +80,7 @@ public:
         SDL_DestroyTexture(SDLTexture);
         SDL_DestroyRenderer(SDLRenderer);
         SDL_DestroyWindow(SDLWindow);
+        delete[] FrameBuffer;
     }
     // Checks if the initialization of SDL components was successful.
     bool initSuccessful()
@@ -89,6 +93,10 @@ public:
         {
             return true;
         }
+    }
+    vector<vector<string>> *GetTileMap()
+    {
+        return this->TileMap;
     }
     void Update()
     {

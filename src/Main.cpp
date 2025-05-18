@@ -40,6 +40,7 @@ bool Quit()
 // Main loop of game
 void MainLoop(SDLWindows *windows, InputManager *input_manager, int FPS = 60)
 {
+    auto TileMap = windows->GetTileMap();
     while (!Quit())
     {
         input_manager->Update();
