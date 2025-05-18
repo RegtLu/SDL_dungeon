@@ -7,16 +7,17 @@
 
 using json = nlohmann::json;
 
-TileLoader::TileLoader(std::vector<std::string> files, int TileSize)
+TileLoader::TileLoader(std::vector<std::string> files, int TileSize, int resize)
 {
     this->TileSize = TileSize;
+    this->resize = resize;
     std::vector<uint32_t> nullTile(TileSize * TileSize * 4);
     for (int i = 0; i < TileSize * TileSize; i++)
     {
         nullTile[i] = 0xff0000ff;
     }
-    tiles["NULL"] = nullTile;
-    tile_names.push_back("NULL");
+    this->tiles["NULL"] = nullTile;
+    this->tile_names.push_back("NULL");
     for (std::string &file : files)
     {
         loadTileset(file);
@@ -50,20 +51,20 @@ void TileLoader::loadTileset(const std::string &file)
         {
             if (index >= count)
                 break;
-            std::vector<uint32_t> tileData(TileSize * TileSize);
-            for (int ty = 0; ty < TileSize; ty++)
+            std::vector<uint32_t> tileData(TileSize * resize * TileSize * resize);
+            for (int ty = 0; ty < TileSize * resize; ty++)
             {
-                for (int tx = 0; tx < TileSize; tx++)
+                for (int tx = 0; tx < TileSize * resize; tx++)
                 {
-                    int src_x = x * TileSize + tx;
-                    int src_y = y * TileSize + ty;
+                    int src_x = x * TileSize + tx / resize;
+                    int src_y = y * TileSize + ty / resize;
                     int srcIndex = (src_y * imgWidth + src_x) * 4;
                     uint32_t pixel =
                         (gTexture[srcIndex + 0] << 0) |
                         (gTexture[srcIndex + 1] << 8) |
                         (gTexture[srcIndex + 2] << 16) |
                         (gTexture[srcIndex + 3] << 24);
-                    int dstIndex = ty * TileSize + tx;
+                    int dstIndex = ty * (TileSize * resize) + tx;
                     tileData[dstIndex] = pixel;
                 }
             }

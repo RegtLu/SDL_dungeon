@@ -12,9 +12,10 @@ private:
     std::map<std::string, std::vector<uint32_t>> tiles;
     void loadTileset(const std::string &file);
     int TileSize;
+    int resize;
 
 public:
-    TileLoader(std::vector<std::string> files, int TileSize);
+    TileLoader(std::vector<std::string> files, int TileSize, int resize = 1);
     std::vector<uint32_t> GetTile(std::string name);
     int GetTileSize();
 };

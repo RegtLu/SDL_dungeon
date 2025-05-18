@@ -13,20 +13,21 @@ private:
     int WindowWidth;
     int WindowHeight;
     TileLoader *TileSet;
+    int TileResize;
     vector<vector<string>> *TileMap;
     int TileSize;
     void SetTile(int x, int y, string name)
     {
         vector<uint32_t> tileData = TileSet->GetTile(name);
-        for (int i = 0; i < TileSize; i++)
+        for (int i = 0; i < TileSize * TileResize; i++)
         {
-            for (int j = 0; j < TileSize; j++)
+            for (int j = 0; j < TileSize * TileResize; j++)
             {
-                int dst_x = x * TileSize + i;
-                int dst_y = y * TileSize + j;
+                int dst_x = x * TileSize * TileResize + i;
+                int dst_y = y * TileSize * TileResize + j;
                 if (dst_x >= WindowWidth || dst_y >= WindowHeight)
                     continue;
-                int srcIndex = j * TileSize + i;
+                int srcIndex = j * TileSize * TileResize + i;
                 uint32_t pixel = tileData[srcIndex];
                 FrameBuffer[dst_y * WindowWidth + dst_x] = pixel;
             }
@@ -36,9 +37,9 @@ private:
     void UpdateFrameBuffer()
     {
         fill(FrameBuffer, FrameBuffer + WindowWidth * WindowHeight, 0xff00ff00);
-        for (int y = 0; y < WindowHeight / TileSize; y++)
+        for (int y = 0; y < WindowHeight / TileSize / TileResize; y++)
         {
-            for (int x = 0; x < WindowWidth / TileSize; x++)
+            for (int x = 0; x < WindowWidth / TileSize / TileResize; x++)
             {
                 string tileName = (*TileMap)[y][x];
                 SetTile(x, y, tileName);
@@ -58,10 +59,11 @@ private:
     }
 
 public:
-    SDLWindows(string Title = "Window", int WindowWidth = 960, int WindowHeight = 540, TileLoader *TileSet = nullptr, vector<vector<string>> *TileMap = nullptr)
+    SDLWindows(string Title = "Window", int WindowWidth = 960, int WindowHeight = 540, int TileResize = 1, TileLoader *TileSet = nullptr, vector<vector<string>> *TileMap = nullptr)
     {
         this->WindowWidth = WindowWidth;
         this->WindowHeight = WindowHeight;
+        this->TileResize = TileResize;
         FrameBuffer = new int[WindowWidth * WindowHeight];
         SDLWindow = SDL_CreateWindow(Title.c_str(), WindowWidth, WindowHeight, 0);
         SDLRenderer = SDL_CreateRenderer(SDLWindow, NULL);

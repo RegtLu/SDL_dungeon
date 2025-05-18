@@ -7,6 +7,7 @@
 using namespace std;
 
 const int TileSize = 32;
+const int TileResize = 2;
 const int Width = 960;
 const int Height = 640;
 const int FPS = 60;
@@ -21,7 +22,6 @@ bool CheckWindowsInit(SDLWindows *windows)
     }
     return true;
 }
-
 
 // Return true if the application should stop.
 bool Quit()
@@ -38,7 +38,7 @@ bool Quit()
 }
 
 // Main loop of game
-void MainLoop(SDLWindows *windows,InputManager *input_manager, int FPS = 60)
+void MainLoop(SDLWindows *windows, InputManager *input_manager, int FPS = 60)
 {
     while (!Quit())
     {
@@ -54,18 +54,18 @@ int main(int argc, char **argv)
     {
         return -1;
     }
-    InputManager input_manager=InputManager();
+    InputManager input_manager = InputManager();
     vector<string> files = {"test.json"};
-    TileLoader TileSet(files, TileSize);
-    vector<vector<string>> TileMap(Height / TileSize, vector<string>(Width / TileSize, "house1"));
-    SDLWindows MainWindows((string) "Game", Width, Height, &TileSet, &TileMap);
+    TileLoader TileSet(files, TileSize, TileResize);
+    vector<vector<string>> TileMap(Height / TileSize / TileResize, vector<string>(Width / TileSize / TileResize, "house1"));
+    SDLWindows MainWindows((string) "Game", Width, Height, TileResize, &TileSet, &TileMap);
 
     if (!CheckWindowsInit(&MainWindows))
     {
         SDL_Quit();
         return -1;
     }
-    MainLoop(&MainWindows,&input_manager);
+    MainLoop(&MainWindows, &input_manager);
 
     SDL_Quit();
     return 0;
