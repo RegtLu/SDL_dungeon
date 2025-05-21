@@ -14,7 +14,7 @@ TileLoader::TileLoader(std::vector<std::string> files, int TileSize, int resize)
     std::vector<uint32_t> nullTile(TileSize * TileSize * 4);
     for (int i = 0; i < TileSize * TileSize; i++)
     {
-        nullTile[i] = 0xff0000ff;
+        nullTile[i] = 0x0000000;
     }
     this->tiles["NULL"] = nullTile;
     this->tile_names.push_back("NULL");
